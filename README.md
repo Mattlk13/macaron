@@ -1,3 +1,5 @@
+# The `master` branch is deprecated and will be deleted permanently on March 2022
+
 # Macaron
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/go-macaron/macaron/Go?logo=github&style=for-the-badge)](https://github.com/go-macaron/macaron/actions?query=workflow%3AGo)
