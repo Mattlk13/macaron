@@ -1,9 +1,20 @@
-Macaron [![Build Status](https://travis-ci.org/go-macaron/macaron.svg?branch=v1)](https://travis-ci.org/go-macaron/macaron)
-=======================
+# The `master` branch is deprecated and will be deleted permanently on March 2022
+
+# Macaron
+
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/go-macaron/macaron/Go?logo=github&style=for-the-badge)](https://github.com/go-macaron/macaron/actions?query=workflow%3AGo)
+[![codecov](https://img.shields.io/codecov/c/github/go-macaron/macaron/master?logo=codecov&style=for-the-badge)](https://codecov.io/gh/go-macaron/macaron)
+[![GoDoc](https://img.shields.io/badge/GoDoc-Reference-blue?style=for-the-badge&logo=go)](https://pkg.go.dev/gopkg.in/macaron.v1?tab=doc)
+[![Sourcegraph](https://img.shields.io/badge/view%20on-Sourcegraph-brightgreen.svg?style=for-the-badge&logo=sourcegraph)](https://sourcegraph.com/github.com/go-macaron/macaron)
 
 ![Macaron Logo](https://raw.githubusercontent.com/go-macaron/macaron/v1/macaronlogo.png)
 
 Package macaron is a high productive and modular web framework in Go.
+
+## 📣 Announcement
+
+- If you're considering using Macaron, you may want to take a look at [Flamego](https://flamego.dev/) first, which is [the successor of the Macaron](https://flamego.dev/faqs.html#what-is-the-idea-behind-this-other-than-macaron-martini).
+- That means Macaron is officially in the maintenance mode, and no major features will be added to Macaron.
 
 ## Getting Started
 

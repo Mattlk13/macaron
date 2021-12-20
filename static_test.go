@@ -17,6 +17,7 @@ package macaron
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -69,7 +70,7 @@ func Test_Static(t *testing.T) {
 		Root = os.TempDir()
 		f, err := ioutil.TempFile(Root, "static_content")
 		So(err, ShouldBeNil)
-		f.WriteString("Expected Content")
+		_, _ = f.WriteString("Expected Content")
 		f.Close()
 
 		m := New()
@@ -176,8 +177,7 @@ func Test_Static_Options(t *testing.T) {
 	})
 
 	Convey("Serve static files with options expires", t, func() {
-		var buf bytes.Buffer
-		m := NewWithLogger(&buf)
+		m := New()
 		opt := StaticOptions{Expires: func() string { return "46" }}
 		m.Use(Static(currentRoot, opt))
 
@@ -190,8 +190,7 @@ func Test_Static_Options(t *testing.T) {
 	})
 
 	Convey("Serve static files with options ETag", t, func() {
-		var buf bytes.Buffer
-		m := NewWithLogger(&buf)
+		m := New()
 		opt := StaticOptions{ETag: true}
 		m.Use(Static(currentRoot, opt))
 
@@ -199,13 +198,46 @@ func Test_Static_Options(t *testing.T) {
 		req, err := http.NewRequest("GET", "http://localhost:4000/macaron.go", nil)
 		So(err, ShouldBeNil)
 		m.ServeHTTP(resp, req)
-		tag := GenerateETag(string(resp.Body.Len()), "macaron.go", resp.Header().Get("last-modified"))
+		tag := GenerateETag(fmt.Sprintf("%d", resp.Body.Len()), "macaron.go", resp.Header().Get("last-modified"))
 
-		So(resp.Header().Get("ETag"), ShouldEqual, tag)
+		So(resp.Header().Get("ETag"), ShouldEqual, `"`+tag+`"`)
+	})
+
+	Convey("Serve static files with ETag in If-None-Match", t, func() {
+		m := New()
+		opt := StaticOptions{ETag: true}
+		m.Use(Static(currentRoot, opt))
+
+		resp := httptest.NewRecorder()
+		req, err := http.NewRequest("GET", "http://localhost:4000/macaron.go", nil)
+		So(err, ShouldBeNil)
+		m.ServeHTTP(resp, req)
+		tag := GenerateETag(fmt.Sprintf("%d", resp.Body.Len()), "macaron.go", resp.Header().Get("last-modified"))
+
+		// Second request with ETag in If-None-Match
+		resp = httptest.NewRecorder()
+		req.Header.Add("If-None-Match", `"`+tag+`"`)
+		m.ServeHTTP(resp, req)
+
+		So(resp.Code, ShouldEqual, http.StatusNotModified)
+		So(len(resp.Body.Bytes()), ShouldEqual, 0)
 	})
 }
 
 func Test_Static_Redirect(t *testing.T) {
+	Convey("Serve static files with prefix without redirect", t, func() {
+		m := New()
+		opt := StaticOptions{Prefix: "/public"}
+		m.Use(Static(currentRoot, opt))
+
+		resp := httptest.NewRecorder()
+		req, err := http.NewRequest("GET", "http://localhost:4000/public/", nil)
+		So(err, ShouldBeNil)
+		m.ServeHTTP(resp, req)
+
+		So(resp.Code, ShouldEqual, http.StatusNotFound)
+	})
+
 	Convey("Serve static files with redirect", t, func() {
 		m := New()
 		m.Use(Static(currentRoot, StaticOptions{Prefix: "/public"}))
@@ -217,6 +249,18 @@ func Test_Static_Redirect(t *testing.T) {
 
 		So(resp.Code, ShouldEqual, http.StatusFound)
 		So(resp.Header().Get("Location"), ShouldEqual, "/public/")
+	})
+
+	Convey("Serve static files with improper request", t, func() {
+		m := New()
+		m.Use(Static(currentRoot))
+
+		resp := httptest.NewRecorder()
+		req, err := http.NewRequest("GET", `http://localhost:4000//example.com%2f..`, nil)
+		So(err, ShouldBeNil)
+		m.ServeHTTP(resp, req)
+
+		So(resp.Code, ShouldEqual, http.StatusNotFound)
 	})
 }
 
