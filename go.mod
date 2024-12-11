@@ -8,6 +8,6 @@ require (
 	github.com/smartystreets/assertions v1.0.1 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337
 	github.com/unknwon/com v0.0.0-20190804042917-757f69c95f3e
-	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
+	golang.org/x/crypto v0.31.0
 	gopkg.in/ini.v1 v1.46.0
 )
